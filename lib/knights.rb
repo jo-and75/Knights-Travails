@@ -3,12 +3,12 @@
 require 'set'
 
 class Knights
-  attr_accessor :start_pos
+  attr_accessor :start_pos, :finish_pos
 
   def initialize(start, finish)
     @finish_pos = finish
     @start_pos = draw_board(start)
-    # knight_moves
+    knight_moves
   end
 
   MOVES = [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]].freeze
@@ -21,9 +21,6 @@ class Knights
       root_node = queue[0]
     end
 
-    # p root_node.value
-    # p visited_pos.length
-    # p queue[0].value.empty?
     return root_node if queue[0].value.empty?
     return root_node if root_node.nil?
 
@@ -41,23 +38,37 @@ class Knights
       visited_pos << queue[0].value
       queue.shift
     end
-    # p queue
-    # p visited_pos
+
     draw_board(root_node.next_node, queue, visited_pos)
+    root_node
   end
 
-  def knight_moves(node = @start_pos, line = [])
-    line.push(node)
-    puts line[0]
-    loop do
-      break if line[0] == @finish_pos
+  def knight_moves(node = @start_pos)
+    queue = [[node]] # Queue of paths, starting with the initial node
+    visited = Set.new([node.value]) # Keep track of visited positions
 
-      temp_node = line[0]
-      line.push(temp_node.next_node) unless temp_node.nil?
-      puts temp_node.value
-      line.shift
-      p line
+    until queue.empty?
+      path = queue.shift # Get the next path to explore
+      current_node = path.last # The current node is the last in the path
+
+      if current_node.value == @finish_pos
+        # We've found the shortest path, display it
+        puts "You made it in #{path.length - 1} moves! Here's your path:"
+        path.each { |n| p n.value }
+        return # Exit the method after displaying the path
+      end
+
+      # Explore next nodes
+      current_node.next_node.each do |next_node|
+        next if visited.include?(next_node.value)
+
+        visited.add(next_node.value)
+        new_path = path + [next_node]
+        queue.push(new_path)
+      end
     end
+
+    puts 'No path found!'
   end
 
   class Node
