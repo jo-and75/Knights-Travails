@@ -44,21 +44,19 @@ class Knights
   end
 
   def knight_moves(node = @start_pos)
-    queue = [[node]] # Queue of paths, starting with the initial node
-    visited = Set.new([node.value]) # Keep track of visited positions
+    queue = [[node]]
+    visited = Set.new([node.value])
 
     until queue.empty?
-      path = queue.shift # Get the next path to explore
-      current_node = path.last # The current node is the last in the path
+      path = queue.shift
+      current_node = path.last
 
       if current_node.value == @finish_pos
-        # We've found the shortest path, display it
         puts "You made it in #{path.length - 1} moves! Here's your path:"
         path.each { |n| p n.value }
-        return # Exit the method after displaying the path
+        return
       end
 
-      # Explore next nodes
       current_node.next_node.each do |next_node|
         next if visited.include?(next_node.value)
 
